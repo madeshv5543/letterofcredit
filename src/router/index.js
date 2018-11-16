@@ -60,6 +60,9 @@ const User = () => import('@/views/users/User')
 
 const PurchasOrder = () => import('@/views/mypages/purchaseOrder')
 const newOrder = () => import('@/views/mypages/createOrder')
+const profile = () => import('@/views/mypages/profile')
+const editOrder = () => import('@/views/mypages/editOrder')
+const viewOrder = () => import('@/views/mypages/orderview')
 
 Vue.use(Router)
 
@@ -88,6 +91,21 @@ export default new Router({
           path: '/newOrder',
           name: 'NewOrder',
           component: newOrder
+        },
+        {
+          path: '/myprofile',
+          name: 'MyProfile',
+          component: profile
+        },
+        {
+          path: '/editOrder/:id',
+          name: 'EditOrder',
+          component:editOrder
+        },
+        {
+          path: '/viewOrder/:Id',
+          name: 'ViewOrder',
+          component: viewOrder
         },
         {
           path: 'theme',

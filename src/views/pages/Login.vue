@@ -48,7 +48,8 @@
 </template>
 
 <script>
-import auth from '../../services/authservice.js'
+import auth from '../../services/authservice.js';
+import utils from '@/services/utils.js';
 export default {
   name: 'Login',
   data(){
@@ -70,6 +71,8 @@ export default {
          self.showerr = true;
          self.errmsg = res.message;
        }else{
+         console.log("res",res)
+         utils.saveToken(res.token, JSON.stringify(res.data))
           self.$router.push({ name: "Dashboard" })
        }
       },

@@ -1,19 +1,17 @@
 
 import axios from 'axios';
-const API_URL = 'http://localhost:3000/api'
-const EndPoints ={
-    Register: '/signUp',
-    Login: '/login'
-}
+import config from './config.js';
+const API_URL = config.API_URL;
+const EndPoints = config.END_POINTS;
 
 
 
 const RegisterUser = function(data) {
-    return axios.post(`${API_URL}${EndPoints.Register}`, data).then(res =>  res.data)
+    return axios.post(`${API_URL}${EndPoints.SIGN_UP}`, data).then(res =>  res.data)
 }
 
 const Login = function(data) {
-    return axios.post(`${API_URL}${EndPoints.Login}`, data).then(res => res.data)
+    return axios.post(`${API_URL}${EndPoints.SIGN_IN}`, data).then(res => res.data)
 }
 
 export  default {

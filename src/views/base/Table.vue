@@ -1,8 +1,25 @@
 <template>
   <b-card :header="caption">
-    <b-table :dark="dark" :hover="hover" :striped="striped" :bordered="bordered" :small="small" :fixed="fixed" responsive="sm" :items="items" :fields="captions" :current-page="currentPage" :per-page="perPage">
-      <template slot="status" slot-scope="data">
-        <b-badge :variant="getBadge(data.item.status)">{{data.item.status}}</b-badge>
+    <b-table :dark="dark"  :hover="hover" :striped="striped" :bordered="bordered" :small="small" :fixed="fixed" responsive="sm" :items="items" :fields="captions" :current-page="currentPage" :per-page="perPage">
+      <template slot="Action" slot-scope="data">
+        <b-button type="button" @click="$emit('edit-Item', data.item)" size="sm" variant="primary"><i class="fa fa-pencil-square-o"></i></b-button>
+         <b-button type="button" @click="$emit('delete-Item', data.item)" size="sm" variant="primary"><i class="fa fa-trash"></i></b-button>
+        <!-- <b-badge :variant="getBadge(data.item.status)">{{data.item.status}}</b-badge> -->
+      </template>
+      <template slot="status" slot-scope="data" >
+        New
+      </template>
+      <template slot="orderAction" slot-scope="data">
+        <b-button type="button" @click="$emit('edit-Item', data.item._id)" size="sm" variant="primary"><i class="fa fa-pencil-square-o"></i></b-button>
+        <b-button style="margin:2px" type="button" @click="$emit('delete-Item', data.item._id)" size="sm" variant="primary"><i class="fa fa-trash"></i></b-button>
+        <b-button type="button" @click="$emit('view-Item', data.item._id)" size="sm" variant="primary"><i class="fa fa-eye"></i></b-button>
+        <!-- <b-badge :variant="getBadge(data.item.status)">{{data.item.status}}</b-badge> -->
+      </template>
+      <template slot="seller" slot-scope="data">
+        {{getData(data)}}
+      </template>
+            <template slot="createdDate" slot-scope="data">
+        {{data.item.createdDate | moment("DD-MM-YYYY") }}
       </template>
     </b-table>
     <nav>
@@ -79,8 +96,14 @@ export default {
           : status === 'Pending' ? 'warning'
             : status === 'Banned' ? 'danger' : 'primary'
     },
+    getData(data) {
+       return data.item.seller.username
+    },
     getRowCount: function () {
       return this.items.length
+    },
+    itemclicked: function(item){
+      console.log("clicked tem", item)
     }
   }
 }

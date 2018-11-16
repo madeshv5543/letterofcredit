@@ -19,5 +19,10 @@ items:[
     url: '/newOrder',
     icon: 'icon-speedometer',
   },
+  {
+    name: 'My Profile',
+    url: '/myprofile',
+    icon: 'icon-speedometer',
+  },
 ]
 }

@@ -3,61 +3,105 @@
 
     <b-row>
       <b-col lg="12">
-        <c-table :table-data="items" :fields="fields" caption="<i class='fa fa-align-justify'></i> Purchase Orders"></c-table>
+        <c-table :table-data="items" :fields="fields" @edit-Item="editOrder" @delete-Item="deleteOrder" @view-Item="viewOrder" caption="<i class='fa fa-align-justify'></i> Purchase Orders"></c-table>
       </b-col>
 
       
     </b-row><!--/.row-->
+  <div>
+    <b-modal ref="myModalRef" id="modal-center" centered  hide-footer title="Delete Order">
+      <div class="d-block text-center">
+        <h3>Are you sure ?</h3>
+        <p> Do you really want to delete this order? This process cannot be undone.</p>
+      </div>
+      <div style="text-align:center"> 
+      <b-btn style="margin:3px" class="mt-3" variant="plain"  @click="hideModal">Canlcel</b-btn>
+       <b-btn class="mt-3" variant="danger"  @click="deleteConfirm()">Delete</b-btn>
+      </div>
+    </b-modal>
   </div>
-
+  </div>
 </template>
+
 
 <script>
 import { shuffleArray } from '@/shared/utils'
 import cTable from '../base/Table.vue'
+import userService from '@/services/userService.js';
 
-const someData = () => shuffleArray([
-  {username: 'Samppa Nori', registered: '2012/01/01', role: 'Member', status: 'Active', _rowVariant: 'success'},
-  {username: 'Estavan Lykos', registered: '2012/02/01', role: 'Staff', status: 'Banned', _rowVariant: 'danger'},
-  {username: 'Chetan Mohamed', registered: '2012/02/01', role: 'Admin', status: 'Inactive', _rowVariant: 'info'},
-  {username: 'Derick Maximinus', registered: '2012/03/01', role: 'Member', status: 'Pending'},
-  {username: 'Friderik Dávid', registered: '2012/01/21', role: 'Staff', status: 'Active'},
-  {username: 'Yiorgos Avraamu', registered: '2012/01/01', role: 'Member', status: 'Active'},
-  {username: 'Avram Tarasios', registered: '2012/02/01', role: 'Staff', status: 'Banned'},
-  {username: 'Quintin Ed', registered: '2012/02/01', role: 'Admin', status: 'Inactive'},
-  {username: 'Enéas Kwadwo', registered: '2012/03/01', role: 'Member', status: 'Pending'},
-  {username: 'Agapetus Tadeáš', registered: '2012/01/21', role: 'Staff', status: 'Active'},
-  {username: 'Carwyn Fachtna', registered: '2012/01/01', role: 'Member', status: 'Active'},
-  {username: 'Nehemiah Tatius', registered: '2012/02/01', role: 'Staff', status: 'Banned'},
-  {username: 'Ebbe Gemariah', registered: '2012/02/01', role: 'Admin', status: 'Inactive'},
-  {username: 'Eustorgios Amulius', registered: '2012/03/01', role: 'Member', status: 'Pending'},
-  {username: 'Leopold Gáspár', registered: '2012/01/21', role: 'Staff', status: 'Active'},
-  {username: 'Pompeius René', registered: '2012/01/01', role: 'Member', status: 'Active'},
-  {username: 'Paĉjo Jadon', registered: '2012/02/01', role: 'Staff', status: 'Banned'},
-  {username: 'Micheal Mercurius', registered: '2012/02/01', role: 'Admin', status: 'Inactive'},
-  {username: 'Ganesha Dubhghall', registered: '2012/03/01', role: 'Member', status: 'Pending'},
-  {username: 'Hiroto Šimun', registered: '2012/01/21', role: 'Staff', status: 'Active'},
-  {username: 'Vishnu Serghei', registered: '2012/01/01', role: 'Member', status: 'Active'},
-  {username: 'Zbyněk Phoibos', registered: '2012/02/01', role: 'Staff', status: 'Banned'},
-  {username: 'Einar Randall', registered: '2012/02/01', role: 'Admin', status: 'Inactive'},
-  {username: 'Félix Troels', registered: '2012/03/21', role: 'Staff', status: 'Active'},
-  {username: 'Aulus Agmundr', registered: '2012/01/01', role: 'Member', status: 'Pending'}
-])
+
 
 export default {
   name: 'tables',
   components: {cTable},
   data: () => {
     return {
-      items: someData,
-      itemsArray: someData(),
+      items: [],
+      itemdelete:null,
       fields: [
-        {key: 'username', label: 'User', sortable: true},
-        {key: 'registered'},
-        {key: 'role'},
-        {key: 'status', sortable: true}
+        {key: 'orderId', label: 'Order', sortable: true},
+        {key: 'createdDate', label:'Created Date'},
+        {key: 'seller', label: 'Seller'},
+        {key: 'status', sortable: true},
+        {key: 'orderAction'}
       ],
     }
+  },
+  methods: {
+    getOrderList() {
+      let self = this;
+      userService.getOrders()
+      .then(
+        res => {
+         if(res.status === 200) {
+           self.items = res.data;
+         }
+        },
+        err => {
+          console.log("error on get the order list")
+        }
+      )
+    },
+    editOrder(item) {
+     this.$router.push({
+       name:'EditOrder',
+       params:{id:item}
+     })
+    },
+    deleteOrder(item) {
+     this.itemdelete = item;
+     this.showModal()
+    },
+    viewOrder(item) {
+      this.$router.push({
+       name:'ViewOrder',
+       params:{id:item}
+     })
+    },
+    deleteConfirm(){
+      let self = this;
+      self.hideModal()
+      userService.deleteOrder(self.itemdelete)
+      .then(
+        res=> {
+          console.log("item delet ", res)
+          self.itemdelete = null;
+          this.getOrderList();
+        },
+        err => {
+          console.log("item delet  errror", res)
+        }
+      )
+    },
+    showModal () {
+      this.$refs.myModalRef.show()
+    },
+    hideModal () {
+      this.$refs.myModalRef.hide()
+    }
+  },
+  created: function() {
+    this.getOrderList()
   }
 }
 </script>

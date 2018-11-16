@@ -16,7 +16,7 @@ Interceptors()
 
 // todo
 // cssVars()
-
+Vue.use(require('vue-moment'));
 Vue.use(BootstrapVue)
 Vue.use(VueAxios, axios)
 

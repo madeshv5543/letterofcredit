@@ -81,7 +81,7 @@
   import cTable from '../base/Table.vue'
   import userService from '@/services/userService.js'
   export default {
-    name: 'order',
+    name: 'editorder',
     components: {
       cTable
     },
@@ -92,6 +92,7 @@
         show: true,
         items: [],
         itemsArray: [],
+        orderId:null,
         sellerListArray: [],
         seller: {},
         fields: [{
@@ -141,7 +142,7 @@
           sellerId : self.seller._id,
           items : self.items
         }
-        userService.placeOrder(data)
+        userService.updateOrder(data, self.orderId)
         .then(
           res => {
             console.log("order place res", res)
@@ -184,6 +185,25 @@
               console.log("err", err)
             }
           )
+      },
+      getOrderDetails() {
+          let self = this;
+          self.orderId = self.$route.params.id;
+          userService.getOrderDetails(self.orderId)
+          .then(
+            res => {
+                if(res.status === 200) {
+                  let {items, totalCost, seller} = res.data;
+                  self.items = items;
+                  self.seller = self.sellerListArray.find( n => {
+                    return n._id === seller._id
+                  })
+                }
+            },
+            err => {
+              console.log("get order err", err)
+            }
+          )
       }
     },
     computed: {
@@ -204,7 +224,8 @@
       }
     },
     created: function () {
-      this.getSellerList()
+      this.getSellerList();
+      this.getOrderDetails();
     }
   }
 
