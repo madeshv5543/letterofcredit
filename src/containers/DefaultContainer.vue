@@ -66,6 +66,7 @@ import nav from '@/_nav'
 import { Header as AppHeader, SidebarToggler, Sidebar as AppSidebar, SidebarFooter, SidebarForm, SidebarHeader, SidebarMinimizer, SidebarNav, Aside as AppAside, AsideToggler, Footer as TheFooter, Breadcrumb } from '@coreui/vue'
 import DefaultAside from './DefaultAside'
 import DefaultHeaderDropdownAccnt from './DefaultHeaderDropdownAccnt'
+import jwtService from '@/services/utils.js'  
 
 export default {
   name: 'DefaultContainer',
@@ -87,12 +88,18 @@ export default {
   },
   data () {
     return {
-      nav: nav.items
     }
   },
   computed: {
     name () {
       return this.$route.name
+    },
+    nav () {
+      if(jwtService.isSeller()) {
+        return nav.seller
+      }else{
+        return nav.items
+      }
     },
     list () {
       return this.$route.matched.filter((route) => route.name || route.meta.label )

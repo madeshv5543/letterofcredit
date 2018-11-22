@@ -1,12 +1,14 @@
 <template>
   <div class="animated fadeIn">
-
+    <vue-element-loading :active="loading" spinner="bar-fade-scale" color="#5dc596" :is-full-screen="true" /> 
     <b-row>
       <b-col md="12">
         <b-card>
           <div slot="header">
             <strong>New Order</strong>
           </div>
+           <b-alert v-if="sucmsg" variant="success" show>Order Placed Successfully.</b-alert>
+            <b-alert v-if="showErr" variant="danger" show>{{errmsg}}</b-alert>
           <b-form>
             <b-form-group label="Select Seller" label-for="basicSelectLg" :label-cols="3" :horizontal="true">
               <b-form-select id="basicSelectLg" size="lg" :plain="true" :options="sellerlist" v-model="seller">
@@ -42,13 +44,22 @@
                 </div>
                 <b-form @submit.prevent="addItem(item)" novalidate>
                   <b-form-group label="Product Name" label-for="product" :label-cols="5" :horizontal="true">
-                    <b-form-input id="product" name="product" v-model="item.product" type="text" placeholder="Product name"></b-form-input>
+                    <b-form-input id="product" :state="!errors.has('product')"  v-validate="'required'" name="product" v-model="item.product" type="text" placeholder="Product name"></b-form-input>
+                  <b-form-invalid-feedback >
+                   {{errors.first('product')}}
+                  </b-form-invalid-feedback>
                   </b-form-group>
                   <b-form-group label="Unit Price" label-for="unitprice" :label-cols="5" :horizontal="true">
-                    <b-form-input id="unitprice" name="unitprice" v-model="item.unitprice" type="text" placeholder="Unit Price"></b-form-input>
+                    <b-form-input id="unitprice" :state="!errors.has('unitprice')"   v-validate="'required'" name="unitprice" v-model="item.unitprice" type="number" placeholder="Unit Price"></b-form-input>
+                  <b-form-invalid-feedback >
+                   {{errors.first('unitprice')}}
+                  </b-form-invalid-feedback>
                   </b-form-group>
                   <b-form-group label="Quantity" label-for="quantity" :label-cols="5" :horizontal="true">
-                    <b-form-input id="quantity" name="quantity" v-model="item.quantity" type="text" placeholder="Quantity"></b-form-input>
+                    <b-form-input id="quantity" :state="!errors.has('quantity')"  v-validate="'required'" name="quantity" v-model="item.quantity" type="number" placeholder="Quantity"></b-form-input>
+                  <b-form-invalid-feedback >
+                   {{errors.first('quantity')}}
+                  </b-form-invalid-feedback>
                   </b-form-group>
                   <div slot="footer">
                     <b-button type="submit" size="sm" variant="primary"><i class="fa fa-dot-circle-o"></i> Add</b-button>
@@ -93,6 +104,11 @@
         items: [],
         itemsArray: [],
         sellerListArray: [],
+        sucmsg:false,
+        sugmssg:'',
+        errmsg:'',
+        showErr:false,
+        loading:false,
         seller: {},
         fields: [{
             key: 'product',
@@ -122,12 +138,18 @@
       click() {
         // do nothing
       },
+      scrollToTop() {
+        window.scrollTo(0,0);
+      },
       ResetForm() {
         let self = this;
         self.item = {}
       },
       placeOrder () {
         let self = this;
+        self.sucmsg = false;
+        self.errmsg = null;
+        self.showErr = false;
         if(!self.totalCost || !self.items) {
           console.log("cannot place a empty order");
           return;
@@ -141,13 +163,29 @@
           sellerId : self.seller._id,
           items : self.items
         }
+        self.loading = true;
         userService.placeOrder(data)
         .then(
           res => {
-            console.log("order place res", res)
+            self.scrollToTop()
+            self.loading = false
+            if(res.status === 200) {
+              self.sucmsg = true
+            }else{
+                self.showErr = true;
+                self.errmsg = res.message;
+            }
           },
           err => {
-            console.log("err on place order", err)
+            self.scrollToTop()
+            self.loading = false
+              if (err.message) {
+                self.showErr = true;
+                self.errmsg = err.message;
+              } else {
+                self.showErr = true;
+                self.errmsg = 'Something Went wrong. Please try after sometime.';
+              }
           }
         )
       },    
@@ -159,8 +197,11 @@
         this.item.unitprice = item.unitprice
         this.item.quantity = item.quantity
       },
-      addItem(item) {
-        console.log("item", item)
+      async addItem(item) {
+        let valid = await this.$validator.validateAll()
+        if(!valid) {
+          return;
+        }
         let newItem = JSON.parse(JSON.stringify(item))
         newItem.total = parseFloat(newItem.quantity) * parseFloat(newItem.unitprice);
         this.items.push(newItem);

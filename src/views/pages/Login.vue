@@ -14,11 +14,17 @@
                 </div>
                   <b-input-group class="mb-3">
                     <b-input-group-prepend>   <b-input-group-text>@</b-input-group-text></b-input-group-prepend>
-                    <b-form-input type="text" class="form-control" v-model="user.email" placeholder="Email" autocomplete="email" />
+                    <b-form-input type="text" class="form-control"  v-validate="'required'" name="email" :state="!errors.has('email')" v-model="user.email" placeholder="Email" autocomplete="email" />
+                 <b-form-invalid-feedback>
+                  {{errors.first('email')}}
+                </b-form-invalid-feedback>
                   </b-input-group>
                   <b-input-group class="mb-4">
                     <b-input-group-prepend><b-input-group-text><i class="icon-lock"></i></b-input-group-text></b-input-group-prepend>
-                    <b-form-input type="password" class="form-control"  v-model="user.password" placeholder="Password" autocomplete="current-password" />
+                    <b-form-input type="password" class="form-control"   v-validate="'required'" name="password" :state="!errors.has('password')"  v-model="user.password" placeholder="Password" autocomplete="current-password" />
+                <b-form-invalid-feedback>
+                  {{errors.first('password')}}
+                </b-form-invalid-feedback>
                   </b-input-group>
                   <b-row>
                     <b-col cols="6">
@@ -36,7 +42,7 @@
                 <div>
                   <h2>Sign up</h2>
                   <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                  <b-button variant="primary" class="active mt-3">Register Now!</b-button>
+                  <router-link to="/register"> <b-button variant="primary" class="active mt-3">Register Now!</b-button> </router-link>
                 </div>
               </b-card-body>
             </b-card>
@@ -60,11 +66,15 @@ export default {
     }
   },
   methods: {
-    loginuser:function() {
+    loginuser:async function() {
       console.log("lgoin called")
       let self = this;
       self.showerr = false;
       self.errmsg ="";
+      let checkform = await self.$validator.validateAll()
+      if(!checkform) {
+          return ;
+      }
       auth.Login(self.user)
       .then( res => {
        if(res.status != 200) {

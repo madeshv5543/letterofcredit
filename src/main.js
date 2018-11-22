@@ -8,6 +8,10 @@ import Vue from 'vue'
 import BootstrapVue from 'bootstrap-vue'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
+import VeeValidate from 'vee-validate';
+import VueElementLoading from 'vue-element-loading'
+import TreeView from "vue-json-tree-view"
+ 
  
 import App from './App'
 import router from './router'
@@ -19,6 +23,9 @@ Interceptors()
 Vue.use(require('vue-moment'));
 Vue.use(BootstrapVue)
 Vue.use(VueAxios, axios)
+Vue.use(VeeValidate);
+Vue.component('VueElementLoading', VueElementLoading)
+Vue.use(TreeView)
 
 /* eslint-disable no-new */
 new Vue({

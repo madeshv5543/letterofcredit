@@ -1,4 +1,9 @@
 export const API_URL = "http://localhost:3000/api";
+const ID_TOKEN_KEY = "id_token";
+const USER_DATA = "user_data";
+const SELLER = "Seller";
+const BUYER = "Buyer";
+
 export const END_POINTS = {
     SIGN_UP:'/signUp',
     SIGN_IN:'/login',
@@ -9,6 +14,9 @@ export const END_POINTS = {
     ORDER_LIST : '/myOrder',
     GET_ORDER : '/order/',
     EDIT_ORDER : '/editOrder/',
-    DELETE_ORDER : '/deleteOrder/'
+    DELETE_ORDER : '/deleteOrder/',
+    SENT_TO_SELLER : '/senttoseller/',
+    SELLER_CONFIRM :'/sellerconfirm/',
+    DATA_BLOCKCHAIN :'/datafromblochain'
 }
-export default {API_URL, END_POINTS};
+export default {API_URL, END_POINTS, ID_TOKEN_KEY, USER_DATA, SELLER, BUYER};

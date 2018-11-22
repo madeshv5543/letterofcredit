@@ -1,12 +1,14 @@
 <template>
   <div class="animated fadeIn">
-
+<vue-element-loading :active="loading" spinner="bar-fade-scale" color="#5dc596" :is-full-screen="true" />
     <b-row>
       <b-col md="12">
         <b-card>
           <div slot="header">
             <strong>New Order</strong>
           </div>
+            <b-alert v-if="sucmsg" variant="success" show>Order Updated Successfully.</b-alert>
+            <b-alert v-if="showErr" variant="danger" show>{{errmsg}}</b-alert>
           <b-form>
             <b-form-group label="Select Seller" label-for="basicSelectLg" :label-cols="3" :horizontal="true">
               <b-form-select id="basicSelectLg" size="lg" :plain="true" :options="sellerlist" v-model="seller">
@@ -87,11 +89,19 @@
     },
     data() {
       return {
+       scrollToTop() {
+        window.scrollTo(0,0);
+       },
         selected: [],
         item: {}, // Must be an array reference!
         show: true,
         items: [],
         itemsArray: [],
+        sucmsg:false,
+        sugmssg:'',
+        errmsg:'',
+        loading:false,
+        showErr:false,
         orderId:null,
         sellerListArray: [],
         seller: {},
@@ -129,6 +139,9 @@
       },
       placeOrder () {
         let self = this;
+        self.sucmsg = false;
+        self.errmsg = null;
+        self.showErr = false;
         if(!self.totalCost || !self.items) {
           console.log("cannot place a empty order");
           return;
@@ -142,13 +155,29 @@
           sellerId : self.seller._id,
           items : self.items
         }
+        self.loading = true
         userService.updateOrder(data, self.orderId)
         .then(
           res => {
-            console.log("order place res", res)
+            self.loading = false
+            self.scrollToTop()
+            if(res.status === 200) {
+              self.sucmsg = true
+            }else{
+                self.showErr = true;
+                self.errmsg = res.message;
+            }
           },
           err => {
-            console.log("err on place order", err)
+            self.loading = false
+            self.scrollToTop()
+            if (err.message) {
+              self.showErr = true;
+              self.errmsg = err.message;
+            } else {
+              self.showErr = true;
+              self.errmsg = 'Something Went wrong. Please try after sometime.';
+            }
           }
         )
       },    

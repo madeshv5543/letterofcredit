@@ -44,6 +44,20 @@ export const deleteOrder = (orderId) => {
     return axios.post(`${API_URL}${EndPoints.DELETE_ORDER}${orderId}`, {}, header).then(res => res.data)
 }
 
+export const sentToseller = (orderId) => {
+    const header = { "headers" : utils.authHeader()};
+    return axios.post(`${API_URL}${EndPoints.SENT_TO_SELLER}${orderId}`, {}, header).then(res => res.data)
+}
+
+export const SellerConfirm = (orderId) => {
+    const header = { "headers" : utils.authHeader()};
+    return axios.post(`${API_URL}${EndPoints.SELLER_CONFIRM}${orderId}`, {}, header).then(res => res.data)
+}
+
+export const getDataFromBlochain = (data) => {
+    const header = { "headers" : utils.authHeader()};
+    return axios.post(`${API_URL}${EndPoints.DATA_BLOCKCHAIN}`, data, header).then(res => res.data)
+}
 
 export default {
     getUser,
@@ -53,5 +67,8 @@ export default {
     getOrders,
     getOrderDetails,
     updateOrder,
-    deleteOrder
+    deleteOrder,
+    sentToseller,
+    SellerConfirm,
+    getDataFromBlochain
 }

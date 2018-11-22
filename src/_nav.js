@@ -18,11 +18,22 @@ items:[
     name: 'New Order',
     url: '/newOrder',
     icon: 'icon-speedometer',
+  }
+],
+seller:[
+  {
+    name: 'Dashboard',
+    url: '/dashboard',
+    icon: 'icon-speedometer',
+    // badge: {
+    //   variant: 'primary',
+    //   text: 'NEW'
+    // }
   },
   {
-    name: 'My Profile',
-    url: '/myprofile',
+    name: 'Purchase Order',
+    url: '/purchaseOrders',
     icon: 'icon-speedometer',
-  },
+  }
 ]
 }
